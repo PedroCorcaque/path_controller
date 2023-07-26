@@ -86,11 +86,15 @@ class Env():
     def report_goal_distance(self, distance, collision, goal, step=1.0):
         reward = -np.log(self.getGoalDistace() + 1e-8) * step * 0.01
         if collision:
-            rospy.loginfo("Collision!!")
+            rospy.loginfo("**********")
+            rospy.loginfo("BATEU!!")
+            rospy.loginfo("**********")
             self.collision_numbers += 1
             reward = -100
         if goal:
-            rospy.loginfo("Goal!!")
+            rospy.loginfo("**********")
+            rospy.loginfo("CHEGOU!!")
+            rospy.loginfo("**********")
             self.pub_cmd_vel.publish(Twist())
             self.goal_x, self.goal_y = self.respawn_goal.getPosition(True, delete=True)
             self.goal_distance = self.getGoalDistace()
@@ -99,7 +103,7 @@ class Env():
             self.goal_numbers -= 1
             reward = 200
         
-        rospy.loginfo("Number of targets %s / distance to curent goal %s / collission number %s", self.goal_numbers, distance, self.collision_numbers)
+        # rospy.loginfo("Number of targets %s / distance to curent goal %s / collission number %s", self.goal_numbers, distance, self.collision_numbers)
         return reward
         
     def step(self, action, step):

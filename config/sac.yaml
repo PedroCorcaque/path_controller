@@ -1,11 +1,11 @@
 state_dimension: 361 # 360 Scan + 1 Distance2Goal
 action_dimension: 2
 learning_rate: 0.001
-gamma: 0.5
+gamma: 0.8
 alpha: 0.2
-batch_size: 64
+batch_size: 128
 num_episodes: 1000
-max_steps: 800
+max_steps: 1000
 hidden_layer: 256
 
 targetbox_distance: 0.5
