@@ -66,7 +66,7 @@ class Respawn():
                               self.goal_position.position.y)
                 break
             else:
-                pass
+                break
 
     def deleteModel(self):
         while True:
@@ -111,7 +111,7 @@ class Respawn():
                 goal_y_list = [-0.5, -1.9, 1.5, -0.9, 1, 1.1, -1.5, 1.5, 1.8, -1, 1.6, -0.8]
 
                 self.index = random.randrange(0, 12)
-                print(self.index, self.last_index)
+                print("--------------------------------------------------------------")
                 if self.last_index == self.index:
                     position_check = True
                 else:
@@ -120,10 +120,8 @@ class Respawn():
 
                 self.goal_position.position.x = goal_x_list[self.index]
                 self.goal_position.position.y = goal_y_list[self.index]
-
         time.sleep(0.5)
         self.respawnModel()
-
         self.last_goal_x = self.goal_position.position.x
         self.last_goal_y = self.goal_position.position.y
 

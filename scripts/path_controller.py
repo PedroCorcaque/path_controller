@@ -53,4 +53,4 @@ if __name__ == "__main__":
     env = Env()
     
     path_controller_sac = PathControllerSAC(env)
-    path_controller_sac.start
+    path_controller_sac.start()

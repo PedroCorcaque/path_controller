@@ -6,7 +6,7 @@
 	<node pkg="path_controller" type="combination_obstacle_1.py" name="combination_obstacle_1" output="screen" />
   	<node pkg="path_controller" type="combination_obstacle_2.py" name="combination_obstacle_2" output="screen" />
 	
-	<arg name="model" default="waffle" doc="model type [burger, waffle, waffle_pi]"/>
+	<arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
 	<arg name="x_pos" default="-0.7"/>
  	<arg name="y_pos" default="0.0"/>
 	<arg name="z_pos" default="0.0"/>

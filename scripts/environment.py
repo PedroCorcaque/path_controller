@@ -56,6 +56,7 @@ class Env():
         min_range = 0.13 # bateu
         collision = False
         goal = False
+        done = False
 
         for i in range(len(scan.ranges)):
             if scan.ranges[i] == float('Inf'):
@@ -67,12 +68,14 @@ class Env():
         
         if min_range > min(scan_range) > 0:
             collision = True
+            done = True
 
         current_distance = round(math.hypot(self.goal_x - self.position.x, self.goal_y - self.position.y),2)
         if current_distance < 0.2:
             goal = True
+            done = True
 
-        return scan_range, current_distance, collision, goal
+        return scan_range, current_distance, collision, goal, done
     
     def shutdown(self):
         rospy.loginfo("Terminado atividade do TurtleBot")
@@ -80,10 +83,12 @@ class Env():
         rospy.sleep(1)
         rospy.signal_shutdown("The End")
     
-    def report_goal_distance(self, distance, collision, goal):
+    def report_goal_distance(self, distance, collision, goal, step=1.0):
+        reward = -np.log(self.getGoalDistace() + 1e-8) * step * 0.01
         if collision:
             rospy.loginfo("Collision!!")
             self.collision_numbers += 1
+            reward = -100
         if goal:
             rospy.loginfo("Goal!!")
             self.pub_cmd_vel.publish(Twist())
@@ -92,10 +97,12 @@ class Env():
             distance = self.goal_distance
             rospy.loginfo("Target position: x-> %s, y-> %s!!", self.goal_x, self.goal_y)
             self.goal_numbers -= 1
+            reward = 200
         
         rospy.loginfo("Number of targets %s / distance to curent goal %s / collission number %s", self.goal_numbers, distance, self.collision_numbers)
+        return reward
         
-    def step(self, action):
+    def step(self, action, step):
         liner_vel = action[0]
         ang_vel = action[1]
         
@@ -103,6 +110,14 @@ class Env():
             self.shutdown()
 
         vel_cmd = Twist()
+        if liner_vel < 0.1:
+            liner_vel = 0.1
+        elif liner_vel > 0.5:
+            liner_vel = 0.5
+        if ang_vel < -0.5:
+            ang_vel = -0.5
+        elif ang_vel > 0.5:
+            ang_vel = 0.5
         vel_cmd.linear.x = liner_vel
         vel_cmd.angular.z = ang_vel
         self.pub_cmd_vel.publish(vel_cmd)
@@ -114,11 +129,11 @@ class Env():
             except:
                 pass
 
-        state, distance, collision, goal = self.getState(data)
+        state, distance, collision, goal, done = self.getState(data)
         
-        self.report_goal_distance(distance, collision, goal)
+        reward = self.report_goal_distance(distance, collision, goal, step)
 
-        return np.asarray(state)
+        return np.append(np.asarray(state), self.getGoalDistace()), reward, done, {}
 
     def reset(self):
         rospy.wait_for_service('gazebo/reset_simulation')
@@ -143,8 +158,8 @@ class Env():
         rospy.loginfo("Target position: x-> %s, y-> %s!!", self.goal_x, self.goal_y)
 
         self.goal_distance = self.getGoalDistace()
-        state, distance, collision, goal = self.getState(data)
+        state, distance, collision, goal, done = self.getState(data)
         
-        self.report_goal_distance(distance, collision, goal)
+        reward = self.report_goal_distance(distance, collision, goal)
 
-        return np.asarray(state)
+        return np.append(np.asarray(state), self.getGoalDistace()), {}
