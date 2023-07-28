@@ -2,7 +2,7 @@
 import rospy
 
 from environment import Env
-from stage_controller_sac.sac import SAC
+from sac.sac import SAC
 
 class PathControllerSAC():
     """The PathControllerSAC uses a SAC to move the robot to targets position."""
